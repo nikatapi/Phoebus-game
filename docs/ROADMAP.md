@@ -7,7 +7,7 @@
 - [x] Aries Ram Dash + cracked walls
 - [x] Collectibles (cartridge, Bobblebird, zodiac shrine) with persistence
 - [x] Touch controls and HUD
-- [ ] **First run in the editor** (not yet verified in an engine, see CLAUDE.md)
+- [x] CI: scripts load and test level runs headless; debug APK builds on every push
 
 ## M1: Vertical slice
 - [x] Peck attack, hearts, damage + knockback, checkpoints, pits cost a heart

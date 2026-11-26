@@ -22,4 +22,4 @@ Android 2D action platformer in Godot 4.3. This is a Claude-driven project: the 
 - New mechanics must be playable with the touch layout in GDD section 8.
 
 ## Verification
-The cloud sandbox has not been allowed to run the Godot binary, so code in M0 is unverified in-engine. When engine runs are possible: `godot --headless --import` then `godot --headless --quit-after 120` from the repo root and check for script errors.
+The cloud sandbox cannot run the Godot binary. Instead, `.github/workflows/android.yml` runs on every push: it imports the project, boots the main scene headless for 300 frames, fails on any script error, then exports a debug APK as the `feebus-debug-apk` artifact. After pushing, check the run with the GitHub MCP actions tools and read failed job logs.
