@@ -1,0 +1,34 @@
+; Engine configuration file.
+; Edited by hand for now; Godot will rewrite it on first open.
+
+config_version=5
+
+[application]
+
+config/name="Feebus Carderinius"
+run/main_scene="res://scenes/levels/test_level.tscn"
+config/features=PackedStringArray("4.3", "Mobile")
+config/icon="res://icon.svg"
+
+[autoload]
+
+InputSetup="*res://scripts/autoload/input_setup.gd"
+GameState="*res://scripts/autoload/game_state.gd"
+
+[display]
+
+window/size/viewport_width=640
+window/size/viewport_height=360
+window/size/window_width_override=1280
+window/size/window_height_override=720
+window/stretch/mode="canvas_items"
+window/handheld/orientation=4
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+
+[rendering]
+
+renderer/rendering_method="mobile"
+textures/canvas_textures/default_texture_filter=0
