@@ -31,7 +31,8 @@ Base moveset (no signs needed):
 | Jump | Variable height (release early to cut) |
 | Flutter | One mid-air jump. Birds can fly, so this is capped on purpose |
 | Glide | Hold jump while falling: slow descent |
-| Peck | Short melee attack (to build) |
+| Peck | Short melee in front; also knocks embers out of the air |
+| Stomp | Land on an enemy to hurt it; bounces and refreshes the flutter |
 
 Forgiveness: 0.12s coyote time, 0.15s jump buffer.
 
@@ -57,13 +58,24 @@ Four worlds, one element each, three signs per world. The world's own signs are 
 **Birth sign:** chosen at first launch; grants a small passive (e.g. +1 heart, faster cooldown) tied to that sign.
 **Season bonus:** the real-world zodiac season boosts that sign's power (Aries in season: longer dash). Computed from device date, no network.
 
-## 6. Collectibles
+## 6. Health and enemies (Locked: hearts + checkpoints)
+
+- Feebus has **3 hearts**. A hit costs one, knocks him back, and gives 1s of invulnerability. Ram Dash is invulnerable.
+- **Checkpoint perches** set the respawn point and refill hearts. Falling in a pit costs one heart and returns to the last perch. At zero hearts he respawns at the perch with full hearts; defeated enemies stay defeated.
+- Every enemy telegraphs before it attacks, because touch players react slower.
+
+| Enemy | World | Behaviour | HP |
+|---|---|---|---|
+| Ember Slug | Fire | Patrols, turns at walls and ledges | 1 |
+| Kiln Crab | Fire | Stationary; faces Feebus in range, glows, fires a slow ember | 2 |
+
+## 7. Collectibles
 
 **Cartridges** (roughly 3 per world, 12 total). Each unlocks a 1 to 3 minute microgame at the Nest console, in a distinct retro style. All titles are invented parodies (e.g. "Lava Blaster", "Pong-ish"). No real game names or art.
 
 **Bobblebirds** (5 to 8 per world). Big-headed vinyl figures of enemies and bosses, shown on Nest shelves. Our own brand; do not use the Funko name or copy their trade dress.
 
-## 7. Controls
+## 8. Controls
 
 | Touch | Gamepad | Keyboard |
 |---|---|---|
@@ -75,7 +87,7 @@ Four worlds, one element each, three signs per world. The world's own signs are 
 
 Touch hit areas are 25% larger than the drawn buttons.
 
-## 8. Tech
+## 9. Tech
 
 - Engine: **Godot 4.3**, GDScript (typed), Mobile renderer.
 - Viewport 640x360, `canvas_items` stretch, sensor landscape.
@@ -83,13 +95,12 @@ Touch hit areas are 25% larger than the drawn buttons.
 - Input actions defined in code (`InputSetup` autoload), so touch, pad and keyboard share one path.
 - Art: pixel art, nearest filtering. Until art exists, everything is drawn with primitives in `_draw()`.
 
-## 9. Vertical slice (milestone 1)
+## 10. Vertical slice (milestone 1)
 
 Nest hub, Ember Peaks with Aries, Leo, Sagittarius, three levels, one boss, one cartridge microgame, about six Bobblebirds. Goal: prove the movement is fun on a phone before building more worlds.
 
-## 10. Open questions
+## 11. Open questions
 
-- Health model: hearts with checkpoints, or one-hit with generous checkpoints?
 - Monetisation: paid upfront, free with demo, or none?
 - Art direction: commission a pixel artist, or use generated/placeholder art for longer?
 - Story beats: why are the cartridges and figures scattered?

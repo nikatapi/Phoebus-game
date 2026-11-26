@@ -24,6 +24,19 @@ const TOP := Color("ff7f11")
 	["figure", "bb_kiln_crab", Vector2(1700, -40)],
 ]
 
+## Enemies: [type, position on the ground]. Types: "walker", "shooter".
+@export var enemies: Array = [
+	["walker", Vector2(250, 0)],
+	["walker", Vector2(650, 0)],
+	["shooter", Vector2(1020, 0)],
+	["walker", Vector2(1250, 0)],
+	["shooter", Vector2(1780, 0)],
+	["walker", Vector2(1600, 0)],
+]
+
+## Checkpoint perches: ground positions.
+@export var checkpoints: Array[Vector2] = [Vector2(520, 0), Vector2(1480, 0)]
+
 ## Breakable walls: top-left positions.
 @export var cracked_walls: Array[Vector2] = [Vector2(1100, -48)]
 
@@ -37,6 +50,18 @@ func _ready() -> void:
 		var wall := CrackedWall.new()
 		wall.position = w
 		add_child(wall)
+	for cp_pos in checkpoints:
+		var cp := Checkpoint.new()
+		cp.position = cp_pos
+		add_child(cp)
+	for e in enemies:
+		var enemy: Enemy
+		if e[0] == "walker":
+			enemy = Walker.new()
+		else:
+			enemy = Shooter.new()
+		enemy.position = e[1]
+		add_child(enemy)
 	for p in pickups:
 		var c := Collectible.new()
 		c.kind = p[0]

@@ -10,8 +10,8 @@
 - [ ] **First run in the editor** (not yet verified in an engine, see CLAUDE.md)
 
 ## M1: Vertical slice
-- [ ] Peck attack, health, damage, checkpoints
-- [ ] Two enemy types (walker, shooter)
+- [x] Peck attack, hearts, damage + knockback, checkpoints, pits cost a heart
+- [x] Two enemy types: Ember Slug (walker), Kiln Crab (shooter); stomp, peck, dash all hurt
 - [ ] Leo Roar, Sagittarius Arrow
 - [ ] TileMapLayer levels replacing greybox data
 - [ ] Ember Peaks: 3 levels + boss
