@@ -84,8 +84,10 @@ jobs:
 
       - name: Export debug APK
         run: |
+          echo "--- editor settings ---"; cat ~/.config/godot/editor_settings-4.3.tres
+          echo "--- templates ---"; ls ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable | grep -i android
           mkdir -p build
-          ~/godot/godot --headless --export-debug "Android" build/feebus-debug.apk 2>&1 | tee export.log
+          ~/godot/godot --headless --verbose --export-debug "Android" build/feebus-debug.apk 2>&1 | tee export.log
           test -f build/feebus-debug.apk
 
       - uses: actions/upload-artifact@v4
