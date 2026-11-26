@@ -1,0 +1,92 @@
+name: Android debug APK
+
+on:
+  push:
+  workflow_dispatch:
+
+env:
+  GODOT_VERSION: "4.3"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: sdkmanager "platform-tools" "build-tools;34.0.0" "platforms;android-34"
+
+      - name: Cache Godot
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/godot
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}
+
+      - name: Download Godot and export templates
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          base="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable"
+          mkdir -p ~/godot
+          wget -q "$base/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip" -O /tmp/godot.zip
+          unzip -q /tmp/godot.zip -d ~/godot
+          mv ~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 ~/godot/godot
+          wget -q "$base/Godot_v${GODOT_VERSION}-stable_export_templates.tpz" -O /tmp/templates.zip
+          unzip -q /tmp/templates.zip -d /tmp/tpl
+          mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          mv /tmp/tpl/templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable/
+
+      - name: Debug keystore and editor settings
+        run: |
+          keytool -genkeypair -v -keystore ~/debug.keystore -alias androiddebugkey \
+            -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android \
+            -dname "CN=Android Debug,O=Android,C=US"
+          mkdir -p ~/.config/godot
+          for f in editor_settings-4.tres editor_settings-${GODOT_VERSION}.tres; do
+            cat > ~/.config/godot/$f <<EOS
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_SDK_ROOT"
+          export/android/java_sdk_path = "$JAVA_HOME"
+          export/android/debug_keystore = "$HOME/debug.keystore"
+          export/android/debug_keystore_user = "androiddebugkey"
+          export/android/debug_keystore_pass = "android"
+          EOS
+            sed -i 's/^          //' ~/.config/godot/$f
+          done
+          echo "GODOT_ANDROID_KEYSTORE_DEBUG_PATH=$HOME/debug.keystore" >> $GITHUB_ENV
+          echo "GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey" >> $GITHUB_ENV
+          echo "GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android" >> $GITHUB_ENV
+
+      - name: Import project and check scripts
+        run: |
+          ~/godot/godot --headless --import 2>&1 | tee import.log
+          # Boot the main scene for a few seconds to surface runtime errors.
+          timeout 60 ~/godot/godot --headless --quit-after 300 2>&1 | tee run.log || true
+          if grep -E "SCRIPT ERROR|Parse Error|Failed to load script" import.log run.log; then
+            echo "::error::Script errors found (see above)"
+            exit 1
+          fi
+
+      - name: Export debug APK
+        run: |
+          mkdir -p build
+          ~/godot/godot --headless --export-debug "Android" build/feebus-debug.apk 2>&1 | tee export.log
+          test -f build/feebus-debug.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: feebus-debug-apk
+          path: build/feebus-debug.apk
+          retention-days: 14
